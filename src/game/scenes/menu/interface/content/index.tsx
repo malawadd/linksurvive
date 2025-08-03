@@ -4,7 +4,9 @@ import { MenuPage } from "@type/menu";
 
 import { About } from "./about";
 import { Controls } from "./controls";
+import { Leaderboard } from "./leaderboard";
 import { NewGame } from "./new-game";
+import { Rewards } from "./rewards";
 import { Settings } from "./settings";
 import { Wrapper } from "./styles";
 import { PvpGame } from "./pvp-game";
@@ -22,6 +24,10 @@ export const Content: React.FC<Props> = ({ page }) => {
         return <PvpGame />;
       case MenuPage.SETTINGS:
         return <Settings />;
+      case MenuPage.REWARDS:
+        return <Rewards />;
+      case MenuPage.LEADERBOARD:
+        return <Leaderboard />;
       case MenuPage.ABOUT_GAME:
         return <About />;
       case MenuPage.CONTROLS:

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import pkg from "../../package.json";
 import { DISCORD_WEBHOOK_URL, SCORE_RECORD_ENDPOINT } from "@const/analytics";
 import { AnalyticEventData, IAnalytics } from "@type/analytics";
+import { convex } from "./convex";
 
 function convertFactionId(factionId: number | undefined) {
   switch (factionId) {
@@ -119,6 +120,23 @@ export class Analytics implements IAnalytics {
 
   public sendEvent(data: AnalyticEventData) {
     const payload = this.getEventPayload(data);
+
+    // Send to Convex leaderboard
+    if (data.success && payload.address) {
+      convex.mutation("leaderboard:addOrUpdateScore", {
+        player_address: payload.address,
+        score: payload.score || 0,
+        waves_completed: payload.waves || 0,
+        kills: payload.kills || 0,
+        lived_minutes: payload.lived || 0,
+        faction: payload.faction,
+        token_id: payload.tokenId,
+        difficulty: payload.difficulty,
+        planet: payload.planet,
+      }).catch((error) => {
+        console.warn("Failed to submit score to Convex:", error);
+      });
+    }
 
     if (IS_DEV_MODE) {
       console.log("Track analytic event:", payload);

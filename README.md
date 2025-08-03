@@ -50,7 +50,17 @@ a. install dep
 npm i
 ```
 
-b. run the app 
+b. setup convex
+
+```bash
+npx convex dev
+```
+
+c. configure environment variables
+
+Copy `.env.example` to `.env` and fill in your Convex URL and other required variables.
+
+d. run the app 
 
 ```bash
 npm run start

@@ -23,6 +23,14 @@ export const Navigation: React.FC<Props> = ({ page, onSelect }) => {
           label: "New game",
           page: MenuPage.NEW_GAME,
         },
+        {
+          label: "Rewards",
+          page: MenuPage.REWARDS,
+        },
+        {
+          label: "Leaderboard",
+          page: MenuPage.LEADERBOARD,
+        },
         // {
         //   label: "Pvp game",
         //   page: MenuPage.PVP_GAME,

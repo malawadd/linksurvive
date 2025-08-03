@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useQuery } from "@convex-dev/react";
 
 import { Overlay } from "@game/scenes/system/interface/overlay";
 import { WalletProvider } from "@scene/wallet-provider";
 import { MenuPage } from "@type/menu";
-import { SCORE_RECORD_ENDPOINT } from "@const/analytics";
+import { api } from "../../../../convex/_generated/api";
 import { Content } from "./content";
 import { Copyright } from "./copyright";
 import { Navigation } from "./navigation";
@@ -30,16 +31,13 @@ type Props = {
   defaultPage?: MenuPage;
 };
 
-type RankingItem = {
-  address: string;
-  tokenId: string;
-  faction: string;
-  score: number;
-};
 
 export const MenuUI: React.FC<Props> = ({ defaultPage }) => {
   const [page, setPage] = useState(defaultPage ?? MenuPage.NEW_GAME);
-  const [rankingData, setRankingData] = useState<RankingItem[] | null>(null);
+  
+  // Use Convex query for real-time leaderboard data
+  const rankingData = useQuery(api.leaderboard.getTopScores, { limit: 5 });
+  
   const getEmojiForRank = (rank: number) => {
     switch (rank) {
       case 1:
@@ -56,14 +54,6 @@ export const MenuUI: React.FC<Props> = ({ defaultPage }) => {
         return "";
     }
   };
-  useEffect(() => {
-    if (SCORE_RECORD_ENDPOINT) {
-      fetch(SCORE_RECORD_ENDPOINT)
-        .then((response) => response.json())
-        .then((data) => setRankingData(data))
-        .catch((error) => console.error("Error fetching data: ", error));
-    }
-  }, []);
 
   return (
     <Overlay>
@@ -99,9 +89,9 @@ export const MenuUI: React.FC<Props> = ({ defaultPage }) => {
             <RankingContainer>
               <RankingTitle>Top Rankings</RankingTitle>
               <RankingList>
-                {rankingData.map((item: any, index: any) => (
-                  <RankingItem key={index}>
-                    {getEmojiForRank(index + 1)} Rank {index + 1}:{" "}
+                {rankingData?.map((item: any) => (
+                  <RankingItem key={item.address}>
+                    {getEmojiForRank(item.rank)} Rank {item.rank}:{" "}
                     <SmallText>{item.address}</SmallText>, Score:{" "}
                     <SmallText>{item.score}</SmallText>, TokenID: #
                     {item.tokenId}, Faction:{" "}
