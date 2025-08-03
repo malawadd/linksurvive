@@ -69,18 +69,9 @@ export const Navigation: React.FC<Props> = ({ page, onSelect }) => {
       {
         label: "Settings",
         page: MenuPage.SETTINGS,
-      },
-      {
-        label: "About",
-        page: MenuPage.ABOUT_GAME,
       }
+      // Removed separate About and Controls tabs - they're now part of Settings
     );
-    if (game.device.os.desktop) {
-      items.push({
-        label: "Controls",
-        page: MenuPage.CONTROLS,
-      });
-    }
     return items;
   }, []);
 
