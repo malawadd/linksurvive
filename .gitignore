@@ -13,8 +13,5 @@ node_modules/
 /npm-debug.log
 
 copy.md
-assets/atlas/pet.json
-/assets
+/src/assets
 /dist
-
-.env.local

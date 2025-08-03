@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { action, mutation, query } from "./_generated/server";
+import { api } from "./_generated/api";
 import { createWalletClient, http, parseEther } from "viem";
 import { opBNBTestnet } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
@@ -23,7 +24,7 @@ export const distributeLeaderboardRewards = action({
     season_id: v.string(),
     reward_pool: v.string(), // Total tokens to distribute
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<any> => {
     const PRIVATE_KEY = process.env.MINT_PRIVATE_KEY;
     const TOKEN_CONTRACT_ADDRESS = process.env.REWARD_TOKEN_ADDRESS;
     
@@ -33,7 +34,7 @@ export const distributeLeaderboardRewards = action({
 
     try {
       // Get top 10 players
-      const topPlayers = await ctx.runQuery("leaderboard:getTopScores", { limit: 10 });
+      const topPlayers: any = await ctx.runQuery(api.leaderboard.getTopScores, { limit: 10 });
       
       if (topPlayers.length === 0) {
         return { success: false, message: "No players found" };
@@ -65,12 +66,12 @@ export const distributeLeaderboardRewards = action({
       const results = [];
 
       for (let i = 0; i < Math.min(topPlayers.length, 10); i++) {
-        const player = topPlayers[i];
+        const player: any = topPlayers[i];
         const rewardAmount = (totalRewardPool * BigInt(Math.floor(rewardPercentages[i] * 10000))) / BigInt(10000);
         
         try {
           // Record pending reward
-          await ctx.runMutation("rewards:recordReward", {
+          await ctx.runMutation(api.rewards.recordReward, {
             player_address: player.address,
             reward_amount: rewardAmount.toString(),
             season_id: args.season_id,
@@ -87,7 +88,7 @@ export const distributeLeaderboardRewards = action({
           });
 
           // Update reward status to completed
-          await ctx.runMutation("rewards:updateRewardStatus", {
+          await ctx.runMutation(api.rewards.updateRewardStatus, {
             player_address: player.address,
             season_id: args.season_id,
             transaction_hash: hash,
@@ -103,8 +104,10 @@ export const distributeLeaderboardRewards = action({
           });
 
         } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+          
           // Update reward status to failed
-          await ctx.runMutation("rewards:updateRewardStatus", {
+          await ctx.runMutation(api.rewards.updateRewardStatus, {
             player_address: player.address,
             season_id: args.season_id,
             status: "failed",
@@ -113,7 +116,7 @@ export const distributeLeaderboardRewards = action({
           results.push({
             player: player.address,
             rank: player.rank,
-            error: error.message,
+            error: errorMessage,
             success: false,
           });
         }
@@ -121,7 +124,8 @@ export const distributeLeaderboardRewards = action({
 
       return { success: true, results };
     } catch (error) {
-      return { success: false, error: error.message };
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      return { success: false, error: errorMessage };
     }
   },
 });

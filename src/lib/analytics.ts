@@ -4,6 +4,7 @@ import pkg from "../../package.json";
 import { DISCORD_WEBHOOK_URL, SCORE_RECORD_ENDPOINT } from "@const/analytics";
 import { AnalyticEventData, IAnalytics } from "@type/analytics";
 import { convex } from "./convex";
+import { api } from "../../convex/_generated/api";
 
 function convertFactionId(factionId: number | undefined) {
   switch (factionId) {
@@ -123,7 +124,7 @@ export class Analytics implements IAnalytics {
 
     // Send to Convex leaderboard
     if (data.success && payload.address) {
-      convex.mutation("leaderboard:addOrUpdateScore", {
+      convex.mutation(api.leaderboard.addOrUpdateScore, {
         player_address: payload.address,
         score: payload.score || 0,
         waves_completed: payload.waves || 0,

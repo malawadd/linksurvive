@@ -1,7 +1,7 @@
 import React from "react";
-import { useQuery } from "@convex-dev/react";
+import { useQuery } from "convex/react";
 import { useAccount } from "wagmi";
-import { api } from "../../../../../../convex/_generated/api";
+import { api } from "../../../../../../../convex/_generated/api";
 import { Wrapper, RewardItem, RewardList, RewardTitle, RewardAmount, RewardStatus } from "./styles";
 
 export const Rewards: React.FC = () => {
