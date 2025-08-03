@@ -122,8 +122,8 @@ export class Analytics implements IAnalytics {
   public sendEvent(data: AnalyticEventData) {
     const payload = this.getEventPayload(data);
 
-    // Send to Convex leaderboard
-    if (data.success && payload.address) {
+    // Send to Convex leaderboard - Update for all games with valid addresses, not just successful ones
+    if (payload.address) {
       convex.mutation(api.leaderboard.addOrUpdateScore, {
         player_address: payload.address,
         score: payload.score || 0,
