@@ -48,6 +48,7 @@
   "dependencies": {
     "colyseus.js": "^0.15.9",
     "connectkit": "^1.5.3",
+    "convex": "^1.25.4",
     "events": "3.3.0",
     "gen-biome": "2.4.0",
     "heap": "0.2.7",
