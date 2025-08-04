@@ -48,9 +48,9 @@ export const GameoverUI: React.FC<Props> = ({ stat, record }) => {
         </Container>
         <Result stat={stat} record={record} />
         <Spacer />
-        <Button onClick={shareOnTwitter} size="medium" view="primary">
+        {/* <Button onClick={shareOnTwitter} size="medium" view="primary">
           Share on Twitter
-        </Button>
+        </Button> */}
       </Wrapper>
     </Overlay>
   );

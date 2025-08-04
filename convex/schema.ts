@@ -37,6 +37,55 @@ export default defineSchema({
     .index("by_contract", ["contract_address"])
     .index("by_timestamp", ["mint_timestamp"]),
 
+  tournaments: defineTable({
+    tournament_id: v.number(),
+    name: v.string(),
+    start_time: v.number(),
+    end_time: v.number(),
+    vote_end_time: v.number(),
+    total_reward_pool: v.string(),
+    winner_address: v.optional(v.string()),
+    is_finalized: v.boolean(),
+    is_active: v.boolean(),
+    contract_address: v.string(),
+    transaction_hash: v.optional(v.string()),
+    created_at: v.number(),
+  })
+    .index("by_tournament_id", ["tournament_id"])
+    .index("by_active", ["is_active"])
+    .index("by_start_time", ["start_time"])
+    .index("by_end_time", ["end_time"]),
+
+  tournament_participants: defineTable({
+    tournament_id: v.number(),
+    player_address: v.string(),
+    current_score: v.number(),
+    waves_completed: v.number(),
+    kills: v.number(),
+    lived_minutes: v.number(),
+    joined_at: v.number(),
+    last_score_update: v.number(),
+    transaction_hash: v.optional(v.string()),
+  })
+    .index("by_tournament", ["tournament_id"])
+    .index("by_player", ["player_address"])
+    .index("by_tournament_player", ["tournament_id", "player_address"])
+    .index("by_score", ["tournament_id", "current_score"]),
+
+  tournament_votes: defineTable({
+    tournament_id: v.number(),
+    voter_address: v.string(),
+    voted_player_address: v.string(),
+    vote_timestamp: v.number(),
+    transaction_hash: v.string(),
+    vote_cost: v.string(),
+    has_claimed_reward: v.boolean(),
+  })
+    .index("by_tournament", ["tournament_id"])
+    .index("by_voter", ["voter_address"])
+    .index("by_voted_player", ["tournament_id", "voted_player_address"])
+    .index("by_transaction", ["transaction_hash"]),
+
   reward_history: defineTable({
     player_address: v.string(),
     reward_amount: v.string(), // Using string for big numbers
