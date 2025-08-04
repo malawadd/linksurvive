@@ -74,7 +74,7 @@ The game will be available at `http://localhost:9999/`
 
 ### Etherlink Testnet Deployments
 
-- **NFT Contract:** [0xAe467A4CfCe5310C50E2b2A1ad30768A02155fAC](https://testnet-explorer.etherlink.com/address/0xAe467A4CfCe5310C50E2b2A1ad30768A02155fAC)
+- **NFT Contract:** [0xAe467A4CfCe5310C50E2b2A1ad30768A02155fAC](https://testnet.explorer.etherlink.com/address/0xAe467A4CfCe5310C50E2b2A1ad30768A02155fAC)
 - **Tournament Contract:** *Coming Soon*
 
 ### Contract Features
