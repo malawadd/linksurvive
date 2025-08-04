@@ -9,7 +9,7 @@ import { Wrapper, Params, ButtonWrapper } from "./styles";
 import { WawaContainer } from "@game/scenes/menu/interface/styles";
 import { Param } from "./param";
 import { useOwnedWawas } from "@lib/wawa";
-import { defaultWawa } from "@type/wawa";
+import { defaultWawa, Wawa } from "@type/wawa";
 
 export const PvpGame: React.FC = () => {
   const game = useGame<IGame>();
@@ -64,7 +64,7 @@ export const PvpGame: React.FC = () => {
       </Params>
       {wawas.length > 0 ? (
         <WawaContainer>
-          {wawas.map((wawa) => (
+          {wawas.map((wawa: Wawa) => (
             <Button
               key={wawa.tokenId}
               onClick={() =>

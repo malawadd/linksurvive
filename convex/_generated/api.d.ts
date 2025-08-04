@@ -16,6 +16,7 @@ import type {
 import type * as admin from "../admin.js";
 import type * as crons from "../crons.js";
 import type * as leaderboard from "../leaderboard.js";
+import type * as nfts from "../nfts.js";
 import type * as rewards from "../rewards.js";
 
 /**
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   crons: typeof crons;
   leaderboard: typeof leaderboard;
+  nfts: typeof nfts;
   rewards: typeof rewards;
 }>;
 export declare const api: FilterApi<

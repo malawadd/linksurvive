@@ -19,6 +19,24 @@ export default defineSchema({
     .index("by_player", ["player_address"])
     .index("by_updated_at", ["updated_at"]),
 
+  nft_mints: defineTable({
+    player_address: v.string(),
+    token_id: v.number(),
+    transaction_hash: v.string(),
+    contract_address: v.string(),
+    mint_timestamp: v.number(),
+    faction: v.optional(v.string()),
+    pet_id: v.optional(v.number()),
+    gene: v.optional(v.string()),
+    token_uri: v.optional(v.string()),
+    is_verified: v.boolean(), // Whether the mint has been verified on-chain
+  })
+    .index("by_player", ["player_address"])
+    .index("by_token_id", ["token_id"])
+    .index("by_transaction", ["transaction_hash"])
+    .index("by_contract", ["contract_address"])
+    .index("by_timestamp", ["mint_timestamp"]),
+
   reward_history: defineTable({
     player_address: v.string(),
     reward_amount: v.string(), // Using string for big numbers

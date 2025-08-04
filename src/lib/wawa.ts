@@ -1,42 +1,11 @@
 // @ts-nocheck
-import { useQuery } from "wagmi";
-import { parseAbiItem } from "viem";
+import { useQuery } from "convex/react";
+import { useQuery as useWagmiQuery } from "wagmi";
 import { FactionId, PetId, Tier, Swatch, Metadata, Wawa } from "@type/wawa";
+import { api } from "../../convex/_generated/api";
 import { client } from "./wagmi";
 
-const wawaNftAddress = "0x1fC0d18d6045DCBD44933889496d5cf5F5360010" as const;
-// const wawaNftABI = [
-//   {
-//     inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-//     name: "getAeonInfo",
-//     outputs: [
-//       {
-//         components: [
-//           {
-//             components: [
-//               { internalType: "uint8", name: "headwear", type: "uint8" },
-//               { internalType: "uint8", name: "eyes", type: "uint8" },
-//               { internalType: "uint8", name: "chest", type: "uint8" },
-//               { internalType: "uint8", name: "legs", type: "uint8" },
-//             ],
-//             internalType: "struct Trait",
-//             name: "trait",
-//             type: "tuple",
-//           },
-//           { internalType: "string", name: "tokenURI", type: "string" },
-//           { internalType: "enum Faction", name: "faction", type: "uint8" },
-//           { internalType: "uint8", name: "petId", type: "uint8" },
-//           { internalType: "bytes32", name: "gene", type: "bytes32" },
-//         ],
-//         internalType: "struct Wawa",
-//         name: "",
-//         type: "tuple",
-//       },
-//     ],
-//     stateMutability: "view",
-//     type: "function",
-//   },
-// ] as const;
+const wawaNftAddress = "0xAe467A4CfCe5310C50E2b2A1ad30768A02155fAC" as const;
 
 const wawaNftABI = [
   {
@@ -51,7 +20,6 @@ const wawaNftABI = [
               { internalType: "string", name: "eyes", type: "string" },
               { internalType: "string", name: "chest", type: "string" },
               { internalType: "string", name: "legs", type: "string" },
-              // Assuming additional components based on the original ABI
               { internalType: "string", name: "bodySwatch", type: "string" },
               { internalType: "string", name: "headwearSwatch", type: "string" },
               { internalType: "string", name: "eyesSwatch", type: "string" },
@@ -59,16 +27,16 @@ const wawaNftABI = [
               { internalType: "string", name: "legsSwatch", type: "string" },
               { internalType: "string", name: "petSwatch", type: "string" }
             ],
-            internalType: "struct Trait", // Adjust this to the actual internal struct name
+            internalType: "struct AeonNFT.Trait",
             name: "trait",
             type: "tuple",
           },
           { internalType: "string", name: "tokenURI", type: "string" },
-          { internalType: "enum Faction", name: "faction", type: "uint8" }, // Adjust this to the actual enum name
+          { internalType: "enum AeonNFT.Faction", name: "faction", type: "uint8" },
           { internalType: "uint8", name: "petId", type: "uint8" },
           { internalType: "bytes32", name: "gene", type: "bytes32" },
         ],
-        internalType: "struct Wawa", // Adjust this to the actual internal struct name
+        internalType: "struct AeonNFT.Aeon",
         name: "",
         type: "tuple",
       },
@@ -77,121 +45,6 @@ const wawaNftABI = [
     type: "function",
   },
 ] as const;
-
-async function getCurrentBlockNumber() {
-  try {
-    return await client.getBlockNumber();
-  } catch (error) {
-    console.error("Error fetching current block number:", error);
-    return null;
-  }
-}
-
-
-const filter = async (from?: `0x${string}`, to?: `0x${string}`, fromBlock?: BigInt, toBlock?: BigInt) => {
-  if (!fromBlock) {
-    
-    let currentBlockNumber = await getCurrentBlockNumber();
-    // currentBlockNumber = currentBlockNumber.toString().slice(0, -1); // Remove the 'n' character
-    fromBlock = BigInt(currentBlockNumber.toString() - 8000);
-    // fromBlock = BigInt(currentBlockNumber - 1000);
-    console.log("currentBlockNumber" , currentBlockNumber)
-    console.log("fromBlock" , fromBlock)
-  }
-  if (!toBlock) {
-    toBlock = BigInt(await getCurrentBlockNumber());
-    cconsole.log("toBlock" , toBlock)
-  }
-
-  return {
-    address: wawaNftAddress,
-    event: parseAbiItem([
-      "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
-    ]),
-    fromBlock: fromBlock,
-    toBlock: toBlock,
-    args: { from, to },
-  };
-};
-
-
-
-// const filter = (from?: `0x${string}`, to?: `0x${string}`) => ({ 
-  
-//   address: wawaNftAddress,
-//   event: parseAbiItem([
-//     "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
-//   ]),
-//   fromBlock: BigInt(3111447),300686
-//   // todo: set toBlock after mint period
-//   args: { from, to },
-  
-// });
-
-export const getERC721TokenIds = async (
-  address: `0x${string}`
-): Promise<number[]> => {
-  const currentBlockNumber = await getCurrentBlockNumber();
-console.log("currentBlockNumber", currentBlockNumber)
-  console.log("query getERC721TokenIds")
-  // const sentLogs = await client.getLogs(filter(address, undefined));
- const  fromBlock = BigInt(currentBlockNumber.toString() - 8000);
- const toBlock = BigInt(await getCurrentBlockNumber());
-  console.log("query send logs")
-  console.log("address", address)
-  const sentLogs = await client.getLogs({  
-    address: wawaNftAddress,
-    event: parseAbiItem([
-          "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
-         ]),
-    args: {
-      from: address,
-      to: undefined
-    },
-    fromBlock: fromBlock,
-  });
-
-  console.log("sentLogs",sentLogs)
-  // const receivedLogs = await client.getLogs(filter(undefined, address));
-
-  const receivedLogs = await client.getLogs({  
-    address: wawaNftAddress,
-    event: parseAbiItem([
-          "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
-         ]),
-    args: {
-      from: undefined,
-      to: address
-    },
-    fromBlock: fromBlock,
-  });
-
-
-  console.log("receivedLogs",receivedLogs)
-  // @ts-ignore
-  const logs = sentLogs
-    .concat(receivedLogs)
-    .sort((a, b) => Number(a.blockNumber - b.blockNumber));
-
-
-
-  const owned = new Set<number>();
-  console.log(owned)
-  for (const {
-    args: { from, to, tokenId },
-  } of logs) {
-    if (!(from && to && tokenId)) continue;
-
-    if (to.toLowerCase() === address.toLowerCase()) {
-      owned.add(Number(tokenId.toString()));
-    } else if (from.toLowerCase() === address.toLowerCase()) {
-      owned.delete(Number(tokenId.toString()));
-    }
-  }
-  console.log("getOwned", Array.from(owned))
-
-  return Array.from(owned);
-};
 
 export async function getMetadata(tokenURI: string): Promise<Metadata> {
   console.log("query metadata")
@@ -224,7 +77,7 @@ export async function getMetadata(tokenURI: string): Promise<Metadata> {
 
 export async function getWawa(tokenId: number): Promise<Wawa> {
   console.log("query getWawa")
-  console.log("query tokenId",tokenId )
+  console.log("query tokenId", tokenId)
   const res = await client.readContract({
     address: wawaNftAddress,
     abi: wawaNftABI,
@@ -246,17 +99,67 @@ export async function getWawa(tokenId: number): Promise<Wawa> {
   };
 }
 
+// Updated to use Convex backend instead of blockchain logs
 export const useOwnedWawas = (address?: `0x${string}`) => {
-  console.log("query useOwnedWawas")
-  const { data, isFetched } = useQuery(
-    ["owned-wawas", address],
-    async () => {
-      if (!address) return [];
-      const tokenIds = await getERC721TokenIds(address);
-      return Promise.all(tokenIds.map((tokenId) => getWawa(tokenId)));
-    },
-    { initialData: [] }
+  console.log("query useOwnedWawas from Convex backend")
+  
+  // Query NFTs from Convex backend
+  const playerNFTs = useQuery(
+    api.nfts.getPlayerNFTs,
+    address ? { player_address: address } : "skip"
   );
 
-  return { data, isFetched };
+  // Use Wagmi's useQuery to fetch the Wawa data when we have NFTs
+  const { data, isFetched } = useWagmiQuery(
+    ["owned-wawas-from-backend", address, playerNFTs?.length],
+    async () => {
+      if (!address || !playerNFTs || playerNFTs.length === 0) return [];
+      
+      console.log("Fetching Wawa data for NFTs:", playerNFTs);
+      
+      // Convert backend NFT data to Wawa format
+      const wawas = await Promise.all(
+        playerNFTs.map(async (nft) => {
+          try {
+            return await getWawa(nft.tokenId);
+          } catch (error) {
+            console.error(`Failed to get Wawa data for token ${nft.tokenId}:`, error);
+            return null;
+          }
+        })
+      );
+      
+      // Filter out any failed requests
+      return wawas.filter((wawa): wawa is Wawa => wawa !== null);
+    },
+    { 
+      enabled: Boolean(address && playerNFTs),
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    }
+  );
+
+  return { 
+    data: data || [], 
+    isFetched: isFetched && playerNFTs !== undefined 
+  };
+};
+
+// Helper function to check if user has minted any NFTs
+export const useHasMintedNFT = (address?: `0x${string}`) => {
+  const hasMinted = useQuery(
+    api.nfts.hasPlayerMintedNFT,
+    address ? { player_address: address } : "skip"
+  );
+  
+  return hasMinted;
+};
+
+// Helper function to get user's latest NFT
+export const useLatestNFT = (address?: `0x${string}`) => {
+  const latestNFT = useQuery(
+    api.nfts.getPlayerLatestNFT,
+    address ? { player_address: address } : "skip"
+  );
+  
+  return latestNFT;
 };

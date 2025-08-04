@@ -8,6 +8,7 @@ import { api } from "../../../../../convex/_generated/api";
 import { Content } from "./content";
 import { Copyright } from "./copyright";
 import { Navigation } from "./navigation";
+import { MintNFT } from "./mint-nft";
 import {
   Wrapper,
   Logotype,
@@ -16,15 +17,14 @@ import {
   Main,
   Menu,
   Title,
-  Link,
-  GifImage,
-  WawaBlock,
   RankingContainer,
   RankingItem,
   RankingList,
   RankingTitle,
   SmallText,
   FactionText,
+  WawaBlock,
+  GifImage,
 } from "./styles";
 
 type Props = {
@@ -77,9 +77,11 @@ const MenuUIContent: React.FC<{
           </Block>
         </Header>
 
-        <WawaBlock href="https://aeonnft.vercel.app/" target="_blank">
-          <GifImage src="assets/aeonNFT_b.png" alt="aeonNFT_b" />
-          <Link>Mint Survival NFT from here</Link>
+        
+
+        <WawaBlock>
+          <GifImage src="assets/aeonNFT_b.png" alt="Aesthetic GIF" />
+          <MintNFT />
         </WawaBlock>
 
         <Menu>

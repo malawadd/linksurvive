@@ -68,7 +68,7 @@ export const NewGame: React.FC = () => {
 
       {wawas.length > 0 ? (
         <WawaContainer>
-          {wawas.map((wawa) => (
+          {wawas.map((wawa: Wawa) => (
             <Button
               key={wawa.tokenId}
               onClick={() => onClickStart(wawa, address)}
