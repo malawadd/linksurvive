@@ -24,13 +24,19 @@ export const MintNFT: React.FC = () => {
     enabled: Boolean(address && isConnected),
   });
 
-  const { data, write, error: writeError, isError: isWriteError } = useContractWrite(config);
+  const { data, write, error: writeError, isError: isWriteError, reset } = useContractWrite(config);
 
-  const { isLoading: isTransactionLoading, isSuccess, data: receipt } = useWaitForTransaction({
+  const { 
+    isLoading: isTransactionLoading, 
+    isSuccess, 
+    isError: isTransactionError,
+    error: transactionError,
+    data: receipt 
+  } = useWaitForTransaction({
     hash: data?.hash,
   });
 
-  // Record the mint in Convex when transaction is successful
+  // Handle transaction success
   React.useEffect(() => {
     if (isSuccess && data?.hash && address && receipt) {
       const recordMintInBackend = async () => {
@@ -61,8 +67,19 @@ export const MintNFT: React.FC = () => {
 
       recordMintInBackend();
       setIsMinting(false);
+      setMintError(null);
     }
   }, [isSuccess, data?.hash, address, receipt, recordMint]);
+
+  // Handle transaction failure
+  React.useEffect(() => {
+    if (isTransactionError || isWriteError) {
+      setIsMinting(false);
+      const errorMessage = transactionError?.message || writeError?.message || "Transaction failed";
+      setMintError(errorMessage);
+      console.error("Transaction failed:", { transactionError, writeError });
+    }
+  }, [isTransactionError, isWriteError, transactionError, writeError]);
 
   // Debug logging
   React.useEffect(() => {
@@ -74,9 +91,12 @@ export const MintNFT: React.FC = () => {
       prepareError: prepareError?.message,
       isPrepareError,
       writeError: writeError?.message,
-      isWriteError
+      isWriteError,
+      isTransactionLoading,
+      isTransactionError,
+      isSuccess
     });
-  }, [address, isConnected, config, write, prepareError, isPrepareError, writeError, isWriteError]);
+  }, [address, isConnected, config, write, prepareError, isPrepareError, writeError, isWriteError, isTransactionLoading, isTransactionError, isSuccess]);
 
   const handleMint = async () => {
     if (!write) {
@@ -87,6 +107,10 @@ export const MintNFT: React.FC = () => {
     try {
       setIsMinting(true);
       setMintError(null);
+      
+      // Reset any previous transaction state
+      reset();
+      
       write();
     } catch (error) {
       console.error("Minting failed:", error);
@@ -95,11 +119,12 @@ export const MintNFT: React.FC = () => {
     }
   };
 
+  // Reset minting state when transaction completes (success or failure)
   React.useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess || isTransactionError) {
       setIsMinting(false);
     }
-  }, [isSuccess]);
+  }, [isSuccess, isTransactionError]);
 
   if (!isConnected) {
     return (
@@ -116,7 +141,9 @@ export const MintNFT: React.FC = () => {
         <MintInfo style={{ color: 'orange', fontSize: '10px' }}>
           Debug: Connected: {isConnected ? 'Yes' : 'No'} | 
           Config: {config ? 'Ready' : 'Not Ready'} | 
-          Write: {write ? 'Available' : 'Not Available'}
+          Write: {write ? 'Available' : 'Not Available'} |
+          TxLoading: {isTransactionLoading ? 'Yes' : 'No'} |
+          TxError: {isTransactionError ? 'Yes' : 'No'}
           {prepareError && <div>Prepare Error: {prepareError.message}</div>}
         </MintInfo>
       )}
@@ -124,13 +151,15 @@ export const MintNFT: React.FC = () => {
       <MintButton
         onClick={handleMint}
         disabled={!write || isMinting || isTransactionLoading}
-        view={isSuccess ? "confirm" : "primary"}
+        view={isSuccess ? "confirm" : mintError ? "decline" : "primary"}
         size="medium"
       >
         {isTransactionLoading || isMinting ? (
           "Minting..."
         ) : isSuccess ? (
           "✅ NFT Minted!"
+        ) : mintError ? (
+          "❌ Mint Failed - Retry"
         ) : !write ? (
           "Preparing..."
         ) : (
@@ -145,7 +174,7 @@ export const MintNFT: React.FC = () => {
       )}
 
       {mintError && (
-        <MintInfo style={{ color: 'orange' }}>
+        <MintInfo style={{ color: 'red' }}>
           {mintError}
         </MintInfo>
       )}
