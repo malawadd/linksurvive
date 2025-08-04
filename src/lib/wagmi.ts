@@ -19,10 +19,16 @@ const etherlinkTestnet: Chain = {
   },
   rpcUrls: {
     default: {
-      http: ['https://rpc.ankr.com/etherlink_testnet'],
+      http: [
+        'https://rpc.ankr.com/etherlink_testnet',
+        'https://node.ghostnet.etherlink.com', // Backup RPC
+      ],
     },
     public: {
-      http: ['https://rpc.ankr.com/etherlink_testnet'],
+      http: [
+        'https://rpc.ankr.com/etherlink_testnet',
+        'https://node.ghostnet.etherlink.com', // Backup RPC
+      ],
     },
   },
   blockExplorers: {

@@ -10,14 +10,14 @@
     "lint": "eslint \"./**/*.{js,ts,tsx}\" --ignore-path .gitignore --fix"
   },
   "author": {
-    "name": "BNBChain Hackathon",
-    "url": "https://dorahacks.io/hackathon/bnbchain-hackathon/"
+    "name": "Etherlink Summer of Code",
+    "url": "https://etherlink.encode.club/"
   },
   "license": "GNU",
   "bugs": {
-    "url": "https://github.com/malawadd/aeons"
+    "url": "https://github.com/malawadd/linksurvive"
   },
-  "homepage": "https://github.com/malawadd/aeons#readme",
+  "homepage": "https://github.com/malawadd/linksurvive#readme",
   "devDependencies": {
     "@types/heap": "0.2.31",
     "@types/jest": "^29.5.4",

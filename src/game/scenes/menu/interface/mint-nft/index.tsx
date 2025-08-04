@@ -111,11 +111,20 @@ export const MintNFT: React.FC = () => {
       // Reset any previous transaction state
       reset();
       
+      // Add a small delay to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       write();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Minting failed:", error);
       setIsMinting(false);
-      setMintError("Failed to initiate mint transaction");
+      
+      // Check if it's a rate limiting error
+      if (error?.message?.includes("rate limited") || error?.message?.includes("too many requests")) {
+        setMintError("Rate limited. Please wait a moment and try again.");
+      } else {
+        setMintError("Failed to initiate mint transaction");
+      }
     }
   };
 
@@ -188,7 +197,7 @@ export const MintNFT: React.FC = () => {
       {data?.hash && (
         <MintInfo>
           <a 
-            href={`https://testnet-explorer.etherlink.com/tx/${data.hash}`} 
+            href={`https://testnet.explorer.etherlink.com/tx/${data.hash}`} 
             target="_blank" 
             rel="noopener noreferrer"
           >
